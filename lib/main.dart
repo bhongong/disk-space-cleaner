@@ -38,6 +38,7 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
   Set<String> selectedItems = {};
   bool isScanning = false;
   bool selectAll = false;
+  bool isDeleting = false; // Added state for deleting
 
   Future<void> browsePath() async {
     String? path = await FilePicker.platform.getDirectoryPath();
@@ -166,6 +167,10 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
 
     if (confirm != true) return;
 
+    setState(() {
+      isDeleting = true; // Set deleting state to true
+    });
+
     int successCount = 0;
     int failCount = 0;
 
@@ -187,6 +192,7 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
       searchResults.removeWhere((path) => selectedItems.contains(path));
       selectedItems.clear();
       selectAll = false;
+      isDeleting = false; // Set deleting state to false
     });
 
     if (!mounted) return;
@@ -244,7 +250,7 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
                       decoration: const InputDecoration(
                         labelText: 'Search Pattern',
                         border: OutlineInputBorder(),
-                        hintText: 'e.g., node_modules',
+                        hintText: 'e.g., node_modules, .venv',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -354,7 +360,7 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: ElevatedButton.icon(
-                  onPressed: selectedItems.isEmpty ? null : deleteSelected,
+                  onPressed: isDeleting ? null : (selectedItems.isEmpty ? null : deleteSelected), // Disable button when deleting
                   icon: const Icon(Icons.delete, color: Colors.red),
                   label: Text(
                     'Delete Selected (${selectedItems.length})',
@@ -365,6 +371,11 @@ class _DiskCleanerPageState extends State<DiskCleanerPage> {
                   ),
                 ),
               ),
+              // Progress Indicator
+              if (isDeleting)
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
           ],
         ),
       ),
