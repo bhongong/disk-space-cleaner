@@ -1,5 +1,3 @@
-Here’s a basic `README.md` file for your Disk Space Cleaner app in Flutter. This includes an overview of the project, installation instructions, and steps to build and run the app.
-
 ```markdown
 # Disk Space Cleaner App
 
